@@ -744,7 +744,7 @@ MODULE_INIT_FUNC(_ax_queue)
         return NULL;
     }
 
-    if((std_lib_queue = PyImport_ImportModule("ax_utils.six.moves.queue")) == NULL) {
+    if((std_lib_queue = PyImport_ImportModule("queue")) == NULL) {
         return NULL;
     }
 

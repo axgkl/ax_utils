@@ -1,14 +1,16 @@
 # Some simple queue module tests, plus some failure conditions
 # to ensure the Queue locks remain stable.
 import os
+import threading
 import time
 import unittest
-import threading
+
 import ax_utils.ax_queue._ax_queue as Queue
 
 in_gevent = os.environ.get('ENFORCE_GEVENT_DURING_BUILD_TESTS')
 
 QUEUE_SIZE = 5
+
 
 # A thread to run a function that unclogs a blocked Queue.
 class _TriggerThread(threading.Thread):
@@ -45,22 +47,16 @@ class _TriggerThread(threading.Thread):
 
 
 class BlockingTestMixin:
-    def do_blocking_test(
-        self, block_func, block_args, trigger_func, trigger_args
-    ):
+    def do_blocking_test(self, block_func, block_args, trigger_func, trigger_args):
         self.t = _TriggerThread(trigger_func, trigger_args)
         self.t.start()
         self.result = block_func(*block_args)
         # If block_func returned before our thread made the call, we failed!
         if not self.t.startedEvent.is_set():
-            self.fail(
-                "blocking function '%r' appeared not to block" % block_func
-            )
+            self.fail("blocking function '%r' appeared not to block" % block_func)
         self.t.join(10)  # make sure the thread terminates
         if self.t.is_alive():
-            self.fail(
-                "trigger function '%r' appeared to not return" % trigger_func
-            )
+            self.fail("trigger function '%r' appeared to not return" % trigger_func)
         return self.result
 
     # Call this instead if block_func is supposed to raise an exception.
@@ -79,16 +75,11 @@ class BlockingTestMixin:
         except expected_exception_class:
             raise
         else:
-            self.fail(
-                'expected exception of kind %r' % expected_exception_class
-            )
+            self.fail('expected exception of kind %r' % expected_exception_class)
         finally:
             self.t.join(10)  # make sure the thread terminates
             if self.t.is_alive():
-                self.fail(
-                    "trigger function '%r' appeared to not return"
-                    % trigger_func
-                )
+                self.fail("trigger function '%r' appeared to not return" % trigger_func)
             if not self.t.startedEvent.is_set():
                 self.fail('trigger thread ended but event never set')
 

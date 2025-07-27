@@ -4,8 +4,8 @@ try:
 except:
     pass
 
-import time
 import threading
+import time
 
 ## boost_queue (nb_threads, seconds)
 # 1 => 5.50
@@ -17,11 +17,13 @@ import threading
 # 2 => 45.24
 # 3 => 76.62
 
+
 class BigFatObject(object):
     def __init__(self):
         self.a = 'adsfadsfadfs'
         self.b = 'xxxxx'
         self.c = {}
+
 
 class Con(threading.Thread):
     def __init__(self, q):
@@ -32,6 +34,7 @@ class Con(threading.Thread):
         for _ in xrange(10**6):
             self.q.get()
 
+
 class Prod(threading.Thread):
     def __init__(self, q):
         self.q = q
@@ -40,6 +43,7 @@ class Prod(threading.Thread):
     def run(self):
         for _ in xrange(10**6):
             self.q.put(BigFatObject())
+
 
 if __name__ == '__main__':
     q = Queue()
@@ -50,4 +54,4 @@ if __name__ == '__main__':
     start = time.time()
     [x.start() for x in cons + prods]
     [x.join() for x in prods + cons]
-    print (time.time() - start)
+    print(time.time() - start)

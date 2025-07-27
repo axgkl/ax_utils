@@ -2,12 +2,8 @@ big_doc = {
     b'_force_collection': False,
     b'_id': b'000E8F-E1308AQS000137',
     b'cpeid': b'000E8F-E1308AQS000137',
-    b'last_update': {
-        b'$date': 1429004949430
-    },
-    b'lastmsg': {
-        b'$date': 1429004949420
-    },
+    b'last_update': {b'$date': 1429004949430},
+    b'lastmsg': {b'$date': 1429004949420},
     b'metadata': {
         b'CPEModel': b'Sercomm_AD1018',
         b'IMS_login': b'user@test.com',
@@ -123,12 +119,10 @@ big_doc = {
                 b'TPS': 331785,
                 b'UT': 93742,
                 b'WLANSER': 1,
-                b'WLANSES': 3572
+                b'WLANSES': 3572,
             },
             b'last_boot_time': {b'$date': 1428911348503},
-            b'metadata': {
-                b'last_boot_time': {b'$date': 1418464069310}
-            },
+            b'metadata': {b'last_boot_time': {b'$date': 1418464069310}},
             b'ts': {b'$date': 1429004954619},
             b'voice': {
                 b'ARIJ': 0,
@@ -142,10 +136,10 @@ big_doc = {
                 b'OCF': 0,
                 b'PL': 0,
                 b'PR': 0,
-                b'PS': 0
-            }
+                b'PS': 0,
+            },
         },
-        b'vf_apply_profile_details': b'SUCCESS'
+        b'vf_apply_profile_details': b'SUCCESS',
     },
     b'mode': b'AD1018',
     b'mode_props': {
@@ -213,7 +207,7 @@ big_doc = {
                 b'PSCU_remap': 3.96,
                 b'REIE': b'1',
                 b'VLE': 1,
-                b'VLS': 1
+                b'VLS': 1,
             },
             b'lan': {
                 b'BR_sum': 0,
@@ -240,25 +234,18 @@ big_doc = {
                 b'WLANSER': 1,
                 b'WLANSES': 3572,
                 b'WLANS_1_remap': 0,
-                b'WPS': b'1'
+                b'WPS': b'1',
             },
             b'rang': {
                 b'UC1R2RGD': b'21000',
-                b'UC1R2RGDD': [
-                    b'21000',
-                    20436,
-                    12,
-                    b'AVG',
-                    b'D',
-                    b'UC1R2RGDD_value'
-                ],
+                b'UC1R2RGDD': [b'21000', 20436, 12, b'AVG', b'D', b'UC1R2RGDD_value'],
                 b'UC1R2RGDM': [
                     b'21000',
                     20279.68421052632,
                     323,
                     b'AVG',
                     b'M',
-                    b'UC1R2RGDM_value'
+                    b'UC1R2RGDM_value',
                 ],
                 b'UC1R2RGDW': [
                     b'21000',
@@ -266,24 +253,17 @@ big_doc = {
                     35,
                     b'AVG',
                     b'W',
-                    b'UC1R2RGDW_value'
+                    b'UC1R2RGDW_value',
                 ],
                 b'UC1R2RGU': b'1100',
-                b'UC1R2RGUD': [
-                    b'1100',
-                    1070,
-                    12,
-                    b'AVG',
-                    b'D',
-                    b'UC1R2RGUD_value'
-                ],
+                b'UC1R2RGUD': [b'1100', 1070, 12, b'AVG', b'D', b'UC1R2RGUD_value'],
                 b'UC1R2RGUM': [
                     b'1100',
                     1059.8854489164089,
                     323,
                     b'AVG',
                     b'M',
-                    b'UC1R2RGUM_value'
+                    b'UC1R2RGUM_value',
                 ],
                 b'UC1R2RGUW': [
                     b'1100',
@@ -291,7 +271,7 @@ big_doc = {
                     35,
                     b'AVG',
                     b'W',
-                    b'UC1R2RGUW_value'
+                    b'UC1R2RGUW_value',
                 ],
                 b'UC1R6RGD': [
                     b'0,5',
@@ -299,7 +279,7 @@ big_doc = {
                     12,
                     b'SUM',
                     b'D',
-                    b'UC1R6RGD_value'
+                    b'UC1R6RGD_value',
                 ],
                 b'UC1R6RGM': [
                     b'70',
@@ -307,7 +287,7 @@ big_doc = {
                     323,
                     b'SUM',
                     b'M',
-                    b'UC1R6RGM_value'
+                    b'UC1R6RGM_value',
                 ],
                 b'UC1R6RGW': [
                     b'1',
@@ -315,24 +295,17 @@ big_doc = {
                     35,
                     b'SUM',
                     b'W',
-                    b'UC1R6RGW_value'
+                    b'UC1R6RGW_value',
                 ],
                 b'UC1R8RGE': b'0',
-                b'UC1R8RGED': [
-                    b'0',
-                    0,
-                    12,
-                    b'AVG',
-                    b'D',
-                    b'UC1R8RGED_value'
-                ],
+                b'UC1R8RGED': [b'0', 0, 12, b'AVG', b'D', b'UC1R8RGED_value'],
                 b'UC1R8RGEM': [
                     b'01',
                     0.30340557275541818,
                     323,
                     b'AVG',
                     b'M',
-                    b'UC1R8RGEM_value'
+                    b'UC1R8RGEM_value',
                 ],
                 b'UC1R8RGEW': [
                     b'01',
@@ -340,24 +313,17 @@ big_doc = {
                     35,
                     b'AVG',
                     b'W',
-                    b'UC1R8RGEW_value'
+                    b'UC1R8RGEW_value',
                 ],
                 b'UC1R8RGW': b'0',
-                b'UC1R8RGWD': [
-                    b'01',
-                    0.75,
-                    12,
-                    b'AVG',
-                    b'D',
-                    b'UC1R8RGWD_value'
-                ],
+                b'UC1R8RGWD': [b'01', 0.75, 12, b'AVG', b'D', b'UC1R8RGWD_value'],
                 b'UC1R8RGWM': [
                     b'02',
                     1.6160990712074299,
                     323,
                     b'AVG',
                     b'M',
-                    b'UC1R8RGWM_value'
+                    b'UC1R8RGWM_value',
                 ],
                 b'UC1R8RGWW': [
                     b'02',
@@ -365,82 +331,88 @@ big_doc = {
                     35,
                     b'AVG',
                     b'W',
-                    b'UC1R8RGWW_value'
+                    b'UC1R8RGWW_value',
                 ],
-                b'periodos': [14, 16, 4]
+                b'periodos': [14, 16, 4],
             },
-            b'roll1_win': [0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0],
-            b'roll2_win': [0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0],
-            b'roll4_win': [0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0],
+            b'roll1_win': [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
+            b'roll2_win': [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
+            b'roll4_win': [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
             b'uc4_status': b'',
             b'vf': {
                 b'diff': {
@@ -483,7 +455,7 @@ big_doc = {
                         b'TPR': 0,
                         b'TPS': 134,
                         b'WLANSER': 0,
-                        b'WLANSES': 0
+                        b'WLANSES': 0,
                     },
                     b'voice': {
                         b'ICA': 0,
@@ -493,8 +465,8 @@ big_doc = {
                         b'OCA': 0,
                         b'OCAN': 0,
                         b'OCC': 0,
-                        b'OCF': 0
-                    }
+                        b'OCF': 0,
+                    },
                 }
             },
             b'voice': {
@@ -516,7 +488,7 @@ big_doc = {
                 b'report5_issue': 0,
                 b'report6_issue': 0,
                 b'report7_issue': 0,
-                b'report8_issue': 0
+                b'report8_issue': 0,
             },
             b'wan': {
                 b'BEST_DCR': 20436,
@@ -556,10 +528,10 @@ big_doc = {
                 b'report1_issue': 0,
                 b'report2_issue': 0,
                 b'report3_issue': 0,
-                b'report4_issue': 0
-            }
+                b'report4_issue': 0,
+            },
         },
-        b'vf_time': {b'$date': 1429004954619}
+        b'vf_time': {b'$date': 1429004954619},
     },
     b'next_forward': {b'$date': 1429030145989},
     b'original_pie': True,
@@ -575,35 +547,23 @@ big_doc = {
             b'PrC': b'TR03.1110.0000',
             b'SN': b'E1308AQS000137',
             b'SV': b'v2.0.08',
-            b'SpV': b'1.0'
+            b'SpV': b'1.0',
         },
         b'DS': b'InternetGatewayDevice:1.0[](Baseline:1, EthernetLAN:1, WiFiLAN:0, GPONWAN:1, Time:1, IPPing:1)',
         b'MS': {
             b'CRU': b'http://200.100.50.70:5555/test/index.html',
-             b'PIE': b'1',
-             b'PII': b'86410',
-             b'PK': b''
+            b'PIE': b'1',
+            b'PII': b'86410',
+            b'PK': b'',
         },
         b'WD': {
             b'2': {
                 b'WCD': {
-                    b'2': {
-                        b'WIC': {
-                            b'1': {
-                                b'EIA': b'150.20.100.150'
-                            }
-                        }
-                    },
-                    b'3': {
-                        b'WIC': {
-                            b'1': {
-                                b'EIA': b'200.100.50.70'
-                            }
-                        }
-                    }
+                    b'2': {b'WIC': {b'1': {b'EIA': b'150.20.100.150'}}},
+                    b'3': {b'WIC': {b'1': {b'EIA': b'200.100.50.70'}}},
                 }
             }
-        }
+        },
     },
-    b'store_name': b'cpe_store'
+    b'store_name': b'cpe_store',
 }

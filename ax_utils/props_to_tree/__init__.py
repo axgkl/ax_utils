@@ -1,11 +1,9 @@
 from collections import defaultdict
 
-from .fallback import py_props_to_tree
-from .fallback import py_tree_to_props
+from .fallback import py_props_to_tree, py_tree_to_props
 
 try:
-    from ._props_to_tree import _props_to_tree
-    from ._props_to_tree import _tree_to_props
+    from ._props_to_tree import _props_to_tree, _tree_to_props
 except ImportError:
     _use_c = False
 else:

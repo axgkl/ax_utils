@@ -6,6 +6,11 @@
 default:
     @just --list
 
+# 🔧 Check CI environment compatibility
+check-ci:
+    @echo "🔍 Checking CI environment compatibility..."
+    uv run python scripts/check_ci_env.py
+
 # 🧹 Clean all build artifacts and caches
 clean:
     @echo "🧹 Cleaning build artifacts..."
@@ -23,7 +28,7 @@ clean:
 install-dev:
     @echo "🔧 Installing development dependencies..."
     uv add --dev pytest pytest-cov pytest-benchmark pytest-xdist
-    uv add --dev black isort flake8 mypy
+    uv add --dev ruff mypy
     @echo "✅ Development dependencies installed"
 
 # 🏗️ Build C/C++ extensions in-place for development
@@ -77,15 +82,14 @@ test-original: build
 # 🔍 Run linting and code quality checks
 lint:
     @echo "🔍 Running linting checks..."
-    uv run black --check --diff ax_utils/ tests/
-    uv run isort --check-only --diff ax_utils/ tests/
-    uv run flake8 ax_utils/ tests/
+    uv run ruff check ax_utils/ tests/
+    uv run ruff format --check ax_utils/ tests/
 
 # 🔧 Auto-fix code formatting
 format:
     @echo "🔧 Formatting code..."
-    uv run black ax_utils/ tests/
-    uv run isort ax_utils/ tests/
+    uv run ruff check --fix ax_utils/ tests/
+    uv run ruff format ax_utils/ tests/
     @echo "✅ Code formatted"
 
 # 🔬 Run type checking

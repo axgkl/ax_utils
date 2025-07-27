@@ -2,9 +2,10 @@ import copy
 import time
 import unittest
 
-from ax_utils.simple_deepcopy._simple_deepcopy import deepcopy
 from ax_utils.ax_tree.ax_tree import AXTree
+from ax_utils.simple_deepcopy._simple_deepcopy import deepcopy
 from ax_utils.unicode_utils.tests.sample_objects import big_doc
+
 
 class HowDeepIsYourLove(object):
     def __init__(self):
@@ -48,12 +49,12 @@ class TestSimpleDeepCopy(unittest.TestCase):
         start = time.time()
         for _ in range(10**5):
             deepcopy(big_doc['props'])
-        print ('fast', time.time() - start)
+        print('fast', time.time() - start)
 
         start = time.time()
         for _ in range(10**5):
             copy.deepcopy(big_doc['props'])
-        print ('slow', time.time() - start)
+        print('slow', time.time() - start)
 
     def test_speed_big_ob(self):
         return
@@ -62,12 +63,12 @@ class TestSimpleDeepCopy(unittest.TestCase):
         start = time.time()
         for _ in range(10**4):
             deepcopy(big_doc)
-        print ('fast', time.time() - start)
+        print('fast', time.time() - start)
 
         start = time.time()
         for _ in range(10**4):
             copy.deepcopy(big_doc)
-        print ('slow', time.time() - start)
+        print('slow', time.time() - start)
 
     def test_ax_tree(self):
         src = AXTree({'a.b.c': 1})

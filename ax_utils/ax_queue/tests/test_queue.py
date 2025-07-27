@@ -1,15 +1,11 @@
 import os
-import time
+import queue as std_queue
 import threading
-from subprocess import Popen, PIPE
+import time
+from subprocess import PIPE, Popen
 from unittest import TestCase
-from ax_utils.six import assertRaisesRegex
 
-from ax_utils.ax_queue import AXQueue as Queue
-from ax_utils.ax_queue import Full
-from ax_utils.ax_queue import Empty
-
-import ax_utils.six.moves.queue as std_queue
+from ax_utils.ax_queue import AXQueue as Queue, Empty, Full
 
 
 class TestQueue(TestCase):
@@ -83,10 +79,10 @@ class TestQueue(TestCase):
 
     def test_unrealistic_max_size(self):
         with self.assertRaises(OverflowError):
-            Queue(2 ** 72)
+            Queue(2**72)
 
         with self.assertRaises(OverflowError):
-            Queue(-2 ** 72)
+            Queue(-(2**72))
 
     def test_negative_max_size(self):
         q = Queue(-1000)
@@ -103,10 +99,10 @@ class TestQueue(TestCase):
     def test_unrealistic_timeout(self):
         q = Queue()
         with self.assertRaises(OverflowError):
-            q.get(True, 2 ** 72)
+            q.get(True, 2**72)
 
         with self.assertRaises(OverflowError):
-            q.put(1, True, 2 ** 72)
+            q.put(1, True, 2**72)
 
     def test_negative_timeout(self):
         q = Queue()
@@ -135,9 +131,9 @@ class TestQueue(TestCase):
 
     def test_put_many_too_many_items(self):
         q = Queue(1)
-        msg = "items of size 3 is bigger than maxsize: 1"
-        with assertRaisesRegex(self, ValueError, msg):
-                q.put_many((1, 2, 3))
+        msg = 'items of size 3 is bigger than maxsize: 1'
+        with self.assertRaisesRegex(ValueError, msg):
+            q.put_many((1, 2, 3))
 
         q.put(None)
         with self.assertRaises(Full):
@@ -163,8 +159,8 @@ class TestQueue(TestCase):
 
     def test_get_many_not_enough_space(self):
         q = Queue(10)
-        msg = "you want to get 12 but maxsize is 10"
-        with assertRaisesRegex(self, ValueError, msg):
+        msg = 'you want to get 12 but maxsize is 10'
+        with self.assertRaisesRegex(ValueError, msg):
             q.get_many(12)
 
         with self.assertRaises(Empty):
@@ -181,9 +177,9 @@ class TestQueue(TestCase):
 
     def _get_own_rss(self):
         """Return the resident set size of this process in kilobytes"""
-        ps_args = ["ps", "-p", str(os.getpid()), "--format=rss"]
+        ps_args = ['ps', '-p', str(os.getpid()), '--format=rss']
         ps_output = Popen(ps_args, stdout=PIPE).communicate()[0]
-        rss_usage = int(ps_output.split(b"\n")[1].strip())
+        rss_usage = int(ps_output.split(b'\n')[1].strip())
         return rss_usage
 
     def test_axos_237(self):
@@ -202,4 +198,3 @@ class TestQueue(TestCase):
         # Memory consumption must not have increased by more than 20 MB.
         # Previously, this would leak 80 MB on a 64 bit machine.
         self.assertLess(rss_after, rss_before + 20000)
-

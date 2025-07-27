@@ -1,19 +1,10 @@
-import time
+import pickle
 import random
+import time
 import unittest
 
-from ax_utils.ax_tree.ax_tree import AXTree
-from ax_utils.ax_tree.ax_tree import AXOrderedTree
-
-from ax_utils.ax_tree.ax_tree import _build_base
-from ax_utils.ax_tree.ax_tree import _build_axtree
-
 from ax_utils.ax_tree._ax_tree import _AXTree
-from ax_utils.six.moves.cPickle import (
-    loads,
-    dumps,
-    HIGHEST_PROTOCOL
-)
+from ax_utils.ax_tree.ax_tree import AXOrderedTree, AXTree, _build_axtree, _build_base
 
 
 class TestAXTree(unittest.TestCase):
@@ -24,32 +15,13 @@ class TestAXTree(unittest.TestCase):
         self.assertIsInstance(tree, self.tree_class)
 
     def test_from_dict(self):
-
         old = {
             'a.b.b': 2,
             'a.b.c': {'a': 3},
             'a.b.d': {'a.c': {'a.e': 1}},
         }
 
-        ref = {
-            'a': {
-                'b': {
-                    'c': {
-                        'a': 3
-                    },
-                    'b': 2,
-                    'd': {
-                        'a': {
-                            'c': {
-                                'a': {
-                                    'e': 1
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        ref = {'a': {'b': {'c': {'a': 3}, 'b': 2, 'd': {'a': {'c': {'a': {'e': 1}}}}}}}
 
         tree = self.tree_class(old)
         self.assertEqual(tree, ref)
@@ -107,16 +79,16 @@ class TestAXTree(unittest.TestCase):
         self.assertEqual(ref, list(tree.iter_leaf_values()))
 
     def test_pop(self):
-        """ pop() must return correct item and delete it"""
+        """pop() must return correct item and delete it"""
         tree = self.tree_class()
-        tree['foo'] = "FOO"
-        tree['bar'] = "BAR"
+        tree['foo'] = 'FOO'
+        tree['bar'] = 'BAR'
 
         comparison = self.tree_class()
-        comparison['bar'] = "BAR"
+        comparison['bar'] = 'BAR'
 
         item = tree.pop('foo')
-        self.assertEqual(item, "FOO")
+        self.assertEqual(item, 'FOO')
         self.assertEqual(tree, comparison)
 
         # pop()ing last item must properly clean up the tree
@@ -125,155 +97,86 @@ class TestAXTree(unittest.TestCase):
         self.assertEqual(tree, self.tree_class())
 
     def test_del(self):
-        tree = self.tree_class({
-            'foo': {
-                'bar1': 1,
-                'bar2': {
-                    "x": 1,
-                    "y": 2,
-                    "z": 3
-                }
-            },
-            'bar': 1,
-            'ccc': {
-                'xxx': {
-                    "yyy": {
-                        "ccc": 1,
-                        "zzz": 2
-                    }
-                }
+        tree = self.tree_class(
+            {
+                'foo': {'bar1': 1, 'bar2': {'x': 1, 'y': 2, 'z': 3}},
+                'bar': 1,
+                'ccc': {'xxx': {'yyy': {'ccc': 1, 'zzz': 2}}},
             }
-        })
+        )
 
         del tree['foo.bar2.x']
         del tree['ccc.xxx']
 
-        ref = self.tree_class({
-            'foo': {
-                'bar1': 1,
-                'bar2': {
-                    'y': 2,
-                    'z': 3
-                }
-            },
-            'bar': 1,
-            'ccc': {}
-        })
+        ref = self.tree_class(
+            {'foo': {'bar1': 1, 'bar2': {'y': 2, 'z': 3}}, 'bar': 1, 'ccc': {}}
+        )
         self.assertEqual(ref, tree)
 
     def test_merge(self):
-        tree_merge_src = self.tree_class({
-            "foo": {
-                "a": {
-                    "a": 1,
-                    "b": 2
-                },
-                "c": {
-                    "a": 1,
-                    "b": 2
-                }
-            },
-            "bar": {
-                "a": {
-                    "a": 3
-                },
-                "c": {
-                    "xxx": 1,
-                    "yyy": 2
-                }
+        tree_merge_src = self.tree_class(
+            {
+                'foo': {'a': {'a': 1, 'b': 2}, 'c': {'a': 1, 'b': 2}},
+                'bar': {'a': {'a': 3}, 'c': {'xxx': 1, 'yyy': 2}},
             }
-        })
+        )
 
-        tree_merge_dst = self.tree_class({
-            "foo": {
-                "a": {
-                    "a": 1,
-                    "b": 8,
-                    "d": 10
+        tree_merge_dst = self.tree_class(
+            {
+                'foo': {
+                    'a': {'a': 1, 'b': 8, 'd': 10},
+                    'c': {
+                        'a': 1,
+                    },
                 },
-                "c": {
-                    "a": 1,
-                }
-            },
-            "bar": {
-                "a": {
-                    "a": 4
-                }
+                'bar': {'a': {'a': 4}},
             }
-        })
+        )
 
         tree_merge_dst.merge(tree_merge_src)
 
-        ref = self.tree_class({
-            'foo': {
-                'a': {
-                    'a': 1,
-                    'b': 2,
-                    'd': 10
-                },
-                'c': {
-                    'a': 1,
-                    'b': 2
-                }
-            },
-            'bar': {
-                'a': {
-                    'a': 3
-                },
-                'c': {
-                    'xxx': 1,
-                    'yyy': 2
-                }
+        ref = self.tree_class(
+            {
+                'foo': {'a': {'a': 1, 'b': 2, 'd': 10}, 'c': {'a': 1, 'b': 2}},
+                'bar': {'a': {'a': 3}, 'c': {'xxx': 1, 'yyy': 2}},
             }
-        })
+        )
         self.assertEqual(ref, tree_merge_dst)
 
     def test_source_has_empty_dict(self):
-        dst = self.tree_class({
-            "a.b.c": 1,
-            "a.b.d": 2
-        })
+        dst = self.tree_class({'a.b.c': 1, 'a.b.d': 2})
 
         src = self.tree_class({'c': {}, 'a.b': {}})
 
         dst.merge(src)
 
-        ref = self.tree_class({
-            "c": {},
-            "a.b.c": 1,
-            "a.b.d": 2
-        })
+        ref = self.tree_class({'c': {}, 'a.b.c': 1, 'a.b.d': 2})
 
         self.assertEqual(ref, dst)
 
     def test_source_has_empty_dict_with_override(self):
-        dst = self.tree_class({
-            "a.b.c": 1,
-            "a.b.d": 2
-        })
+        dst = self.tree_class({'a.b.c': 1, 'a.b.d': 2})
 
         src = self.tree_class({'c': {}, 'a.b': {}})
 
         dst.merge(src, override_with_empty=True)
 
-        ref = self.tree_class({
-            "c": {},
-            "a.b": {}
-        })
+        ref = self.tree_class({'c': {}, 'a.b': {}})
 
         self.assertEqual(ref, dst)
 
-
     def test_pickle_dumps(self):
-        tree = self.tree_class({"a.b.c": 1, 'd': 2})
-        dumps(tree, HIGHEST_PROTOCOL)
+        tree = self.tree_class({'a.b.c': 1, 'd': 2})
+        pickle.dumps(tree, pickle.HIGHEST_PROTOCOL)
 
     def test_pickle_loads(self):
-        tree = self.tree_class({"a.b.c": 1, 'd': 2})
-        self.assertEqual(tree, loads(dumps(tree, HIGHEST_PROTOCOL)))
+        tree = self.tree_class({'a.b.c': 1, 'd': 2})
+        self.assertEqual(
+            tree, pickle.loads(pickle.dumps(tree, pickle.HIGHEST_PROTOCOL))
+        )
 
     def test_get(self):
-        tree = self.tree_class({"a.b.c": 1, 'd': 2})
+        tree = self.tree_class({'a.b.c': 1, 'd': 2})
 
         self.assertEqual(1, tree.get('a.b.c'))
         self.assertEqual(2, tree.get('d'))
@@ -384,8 +287,8 @@ class TestAXOrderedTree(unittest.TestCase):
 
     def test_getitem(self):
         """
-            __getitem__ function has to throw the KeyError exception
-            for keys that don't exist
+        __getitem__ function has to throw the KeyError exception
+        for keys that don't exist
         """
         tree = self.tree_class(self.input_)
         self.assertEqual(1, tree['.1.3.6.1.4.1.33546.1.1'])
@@ -417,9 +320,9 @@ class TestAXOrderedTree(unittest.TestCase):
 
     def test_type_errors(self):
         """
-            This test covers the check for incorrect key types
-            if key type is incorrect:
-            -> get and has_key have to throw the TypeError exception
+        This test covers the check for incorrect key types
+        if key type is incorrect:
+        -> get and has_key have to throw the TypeError exception
         """
         tree = self.tree_class(self.input_)
         # check TypeError exceptions
@@ -430,16 +333,16 @@ class TestAXOrderedTree(unittest.TestCase):
         self.assertRaises(TypeError, tree.get, [1])
 
     def test_pop(self):
-        """ pop() must return correct item and delete it"""
+        """pop() must return correct item and delete it"""
         tree = self.tree_class()
-        tree['foo'] = "FOO"
-        tree['bar'] = "BAR"
+        tree['foo'] = 'FOO'
+        tree['bar'] = 'BAR'
 
         comparison = self.tree_class()
-        comparison['bar'] = "BAR"
+        comparison['bar'] = 'BAR'
 
         item = tree.pop('foo')
-        self.assertEqual(item, "FOO")
+        self.assertEqual(item, 'FOO')
         self.assertEqual(tree, comparison)
 
         # pop()ing last item must properly clean up the tree
@@ -473,7 +376,7 @@ class TestPerf(unittest.TestCase):
         ## build up the classes we want to benchmark
 
         self.classes = []
-        #AXTree with pure python implemenation
+        # AXTree with pure python implemenation
         slow_base = _build_base('_py_impl', dict)
         slow_tree = _build_axtree('_slow_tree', slow_base)
         self.classes.append(slow_tree)
@@ -483,7 +386,7 @@ class TestPerf(unittest.TestCase):
         self.classes.append(AXOrderedTree)
         self.classes.append(dict)
 
-        self.NB = 10 ** 5
+        self.NB = 10**5
         self.ITER_NB = 250
 
     def _insert_perf(self, cls):
@@ -491,8 +394,8 @@ class TestPerf(unittest.TestCase):
 
         start = time.time()
         for x in range(self.NB):
-            tree["DI.SV.%s" % (x % 1000)] = 1
-        count = (self.NB / (time.time() - start)) / 10 ** 6
+            tree['DI.SV.%s' % (x % 1000)] = 1
+        count = (self.NB / (time.time() - start)) / 10**6
         return 'MIO inserts per sec %s' % count
 
     def test_set_perf(self):
@@ -501,15 +404,15 @@ class TestPerf(unittest.TestCase):
             print(ret)
 
     def _get_perf(self, cls):
-        init = [("DI.SV.%s" % x, 1) for x in range(1000)]
+        init = [('DI.SV.%s' % x, 1) for x in range(1000)]
         tree = cls(init)
 
         start = time.time()
         for x in range(self.NB):
-            tree["DI.SV.%s" % (x % 1000)]
+            tree['DI.SV.%s' % (x % 1000)]
 
-        count = (self.NB / (time.time() - start)) / 10 ** 6
-        return "MIO gets per sec: %s" % count
+        count = (self.NB / (time.time() - start)) / 10**6
+        return 'MIO gets per sec: %s' % count
 
     def test_get_perf(self):
         for cls in self.classes:
@@ -529,8 +432,8 @@ class TestPerf(unittest.TestCase):
         for x in range(self.NB):
             str(x % 1000) in tree
 
-        count = (self.NB / (time.time() - start)) / 10 ** 6
-        return "MIO contains per sec: %s" % count
+        count = (self.NB / (time.time() - start)) / 10**6
+        return 'MIO contains per sec: %s' % count
 
     def test_init_perf(self):
         for cls in self.classes:
@@ -542,8 +445,8 @@ class TestPerf(unittest.TestCase):
         for x in range(self.NB):
             cls()
 
-        count = (self.NB / (time.time() - start)) / 10 ** 6
-        return "MIO empyt inits per sec: %s" % count
+        count = (self.NB / (time.time() - start)) / 10**6
+        return 'MIO empyt inits per sec: %s' % count
 
     def _get_function_perf(self, cls):
         init = [(str(x), 1) for x in range(1000)]
@@ -553,8 +456,8 @@ class TestPerf(unittest.TestCase):
         for x in range(self.NB):
             tree.get(str(x % 1000))
 
-        count = (self.NB / (time.time() - start)) / 10 ** 6
-        return "MIO get-function per sec: %s" % count
+        count = (self.NB / (time.time() - start)) / 10**6
+        return 'MIO get-function per sec: %s' % count
 
     def test_get_function_perf(self):
         for cls in self.classes:
@@ -563,15 +466,15 @@ class TestPerf(unittest.TestCase):
 
     def _test_get_iter_perf(self, cls, iter_meth):
         items = 10000
-        init = [("DI.SV.%s" % (300 * random.random()), 1) for x in range(items)]
+        init = [('DI.SV.%s' % (300 * random.random()), 1) for x in range(items)]
         tree = cls(init)
 
         meth = getattr(tree, iter_meth)
         start = time.time()
         for _ in range(self.ITER_NB):
             list(meth())
-        count = ((self.ITER_NB * items) / (time.time() - start)) / 10 ** 6
-        return "MIO iterations per sec: %s" % count
+        count = ((self.ITER_NB * items) / (time.time() - start)) / 10**6
+        return 'MIO iterations per sec: %s' % count
 
     def test_iter_keys_perf(self):
         # come the leaf iteration with a plain dict iteration of keys
@@ -588,19 +491,19 @@ class TestPerf(unittest.TestCase):
 
     def test_pickle_dumps_perf(self):
         for cls in (AXTree, AXOrderedTree):
-            tree = cls({"a.b.c": 1, 'd': 2})
+            tree = cls({'a.b.c': 1, 'd': 2})
             start = time.time()
-            for _ in range(10 ** 5):
-                dumps(tree, HIGHEST_PROTOCOL)
+            for _ in range(10**5):
+                pickle.dumps(tree, pickle.HIGHEST_PROTOCOL)
             print('dumps', cls, time.time() - start)
 
     def test_pickle_loads_perf(self):
         for cls in (AXTree, AXOrderedTree):
-            tree = cls({"a.b.c": 1, 'd': 2})
-            dumped = dumps(tree, HIGHEST_PROTOCOL)
+            tree = cls({'a.b.c': 1, 'd': 2})
+            dumped = pickle.dumps(tree, pickle.HIGHEST_PROTOCOL)
             start = time.time()
-            for _ in range(10 ** 5):
-                loads(dumped)
+            for _ in range(10**5):
+                pickle.loads(dumped)
             print('loads', cls, time.time() - start)
 
 

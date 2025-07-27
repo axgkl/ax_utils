@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 
 # see build test script:
 if os.environ.get('ENFORCE_GEVENT_DURING_BUILD_TESTS'):
@@ -23,7 +24,7 @@ def package_home(globals_dict):
 
 
 def get_object_from_module(full_name, search_folder):
-    '''Returns an arbitrary item from a module.
+    """Returns an arbitrary item from a module.
         Note that the item is returned, not imported. This can be used for
         dynamic loading of classes/factories according to a configuration.
 
@@ -31,15 +32,10 @@ def get_object_from_module(full_name, search_folder):
         producer_class = get_object_from_module\
                 ("ax_utils.event_sources.parallel_queue.Job_Producer",\
                 "/opt/axtract")
-    '''
-    if not '.' in full_name:
+    """
+    if '.' not in full_name:
         msg = 'Need a module where to search the object: %s'
         raise Exception(msg % full_name)
-
-    if sys.version_info.major == 2:
-        if isinstance(full_name, unicode):
-            # No support for 'snowman' in modules names an class names.
-            full_name = full_name.encode('ascii')
 
     mod_name, object_name = full_name.rsplit('.', 1)
 
@@ -57,10 +53,10 @@ def get_object_from_module(full_name, search_folder):
 
 
 def my_members(tclass):
-    '''Return only direct member vars, not from parents
+    """Return only direct member vars, not from parents
 
     Usefull mainly in interactive sessions.
-    '''
+    """
     inherited = set()
     for base_class in tclass.__bases__:
         inherited |= set(dir(base_class))
@@ -68,7 +64,7 @@ def my_members(tclass):
 
 
 def obj_members(obj, direct_only=True, with_values=None, fmt=None):
-    ''' show all members, except those starting with __'''
+    """show all members, except those starting with __"""
     if hasattr(obj, '__class__'):
         tclass = obj.__class__
     else:

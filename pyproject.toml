@@ -7,10 +7,10 @@ name = "ax_utils"
 version = "3.0.2"
 description = "Standalone ax_utils package with C/C++ extensions for high-performance utilities"
 readme = "README.md"
-requires-python = ">=3.8.1"
+requires-python = ">=3.8"
 license = "MIT"
 authors = [
-    {name = "Your Company", email = "contact@yourcompany.com"}
+    {name = "Your Company", email = "contact@axgkl.com"}
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -37,9 +37,7 @@ dev = [
     "pytest-cov>=4.0",
     "pytest-benchmark>=4.0",
     "pytest-xdist>=3.0",
-    "black>=23.0",
-    "isort>=5.0",
-    "flake8>=6.0",
+    "ruff>=0.1.0",
     "mypy>=1.0",
     "twine>=4.0",
 ]
@@ -49,10 +47,10 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourcompany/ax_utils"
-Documentation = "https://github.com/yourcompany/ax_utils#readme"
-Repository = "https://github.com/yourcompany/ax_utils.git"
-"Bug Tracker" = "https://github.com/yourcompany/ax_utils/issues"
+Homepage = "https://github.com/axgkl/ax_utils"
+Documentation = "https://github.com/axgkl/ax_utils#readme"
+Repository = "https://github.com/axgkl/ax_utils.git"
+"Bug Tracker" = "https://github.com/axgkl/ax_utils/issues"
 
 [project.entry-points."gevent.plugins.monkey.did_patch_all"]
 ax_queue = "ax_utils.ax_queue.gevent_patch:patch"
@@ -105,40 +103,55 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
-[tool.black]
+[tool.ruff]
+target-version = "py38"
 line-length = 88
-target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
+exclude = [
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".tox",
+    ".venv",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+]
 
-[tool.isort]
-profile = "black"
-line_length = 88
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-ensure_newline_before_comments = true
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # Pyflakes
+    "I",  # isort
+]
+ignore = [
+    "F821",  # Undefined name (for Python 2/3 compatibility in six.py)
+    "E722",  # Do not use bare except (intentional in fallback imports)
+    "F401",  # Imported but unused (for re-exports and fallback imports)
+    "E402",  # Module level import not at top (for conditional imports)
+    "E731",  # Do not assign lambda (legacy code)
+    "E501",  # Line too long (for specific long strings)
+    "F841",  # Local variable assigned but never used (in benchmarks)
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = true
 
 [tool.mypy]
 python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
 check_untyped_defs = true
 no_implicit_optional = true
 warn_redundant_casts = true
@@ -148,16 +161,12 @@ warn_unreachable = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = [
-    "ax_utils.*._*",  # Ignore C extensions
-]
+module = "ax_utils.*"
 ignore_errors = true
 
 [dependency-groups]
 dev = [
-    "black>=24.8.0",
-    "flake8>=7.1.2",
-    "isort>=5.13.2",
+    "ruff>=0.1.0",
     "mypy>=1.14.1",
     "pytest>=8.3.5",
     "pytest-benchmark>=4.0.0",

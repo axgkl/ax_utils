@@ -15,12 +15,10 @@ There is AXOrderedTree class which uses a OrderedDict for internal storage
 This class has a python implementation ONLY, no great speed
 """
 
-from ax_utils.six.moves import copyreg as copy_reg
-import ax_utils.six as six
 import warnings
-
-from collections import OrderedDict
-from collections import deque
+from collections import OrderedDict, deque
+from collections.abc import Iterator as ABC_Iterator
+from copyreg import pickle
 
 # this is a marker for .pop(), otherwise we are not able to detect if a
 # object is already in or not
@@ -44,7 +42,7 @@ def _build_base(_base_name, _base_parent_type):
 
     def update(self, arg=None, **kwargs):
         if arg is not None:
-            if hasattr(arg, "keys"):
+            if hasattr(arg, 'keys'):
                 for n in arg.keys():
                     self[n] = arg[n]
             else:
@@ -69,11 +67,11 @@ def _build_base(_base_name, _base_parent_type):
         self['a']['b']['c']['d']
         """
         try:
-            partial_keys = key.split(".")
+            partial_keys = key.split('.')
         except AttributeError:
             # This happens if $key is not a basestring. Since all our keys must
             # be strings, we know that $key is not available.
-            raise TypeError("Keys must be strings")
+            raise TypeError('Keys must be strings')
 
         current = self
         for partial_key in partial_keys:
@@ -84,7 +82,7 @@ def _build_base(_base_name, _base_parent_type):
                 # e.g. if you define
                 #            x = AXOrderedTree({'1.2': "foo"})
                 # and try to access x['1.2.3']
-                raise KeyError("%s does not exist in the tree" % key)
+                raise KeyError('%s does not exist in the tree' % key)
             current = _base_parent_type.__getitem__(current, partial_key)
 
         return current
@@ -97,7 +95,7 @@ def _build_base(_base_name, _base_parent_type):
         build.
         {'a' : {'b' : {'c' : {'d' : 1} } } }
         """
-        parts = key.split(".")
+        parts = key.split('.')
 
         ## build the tree until the last key
         for n in parts[:-1]:
@@ -123,27 +121,27 @@ def _build_base(_base_name, _base_parent_type):
 
     def iter_leave_keys(self):
         warn_msg = (
-            "iter_leave_keys is deprecated, "
-            "use iter_leaf_keys instead. "
-            "The iter_leave_keys method will be removed 2014-05-15"
+            'iter_leave_keys is deprecated, '
+            'use iter_leaf_keys instead. '
+            'The iter_leave_keys method will be removed 2014-05-15'
         )
         warnings.warn(warn_msg, DeprecationWarning, 2)
         return self.iter_leaf_keys()
 
     def iter_leave_values(self):
         warn_msg = (
-            "iter_leave_values is deprecated, "
-            "use iter_leaf_values instead. "
-            "The iter_leave_values method will be removed 2014-05-15"
+            'iter_leave_values is deprecated, '
+            'use iter_leaf_values instead. '
+            'The iter_leave_values method will be removed 2014-05-15'
         )
         warnings.warn(warn_msg, DeprecationWarning, 2)
         return self.iter_leaf_values()
 
     def iter_leave_items(self):
         warn_msg = (
-            "iter_leave_items is deprecated, "
-            "use iter_leaf_items instead. "
-            "The iter_leave_items method will be removed 2014-05-15"
+            'iter_leave_items is deprecated, '
+            'use iter_leaf_items instead. '
+            'The iter_leave_items method will be removed 2014-05-15'
         )
         warnings.warn(warn_msg, DeprecationWarning, 2)
         return self.iter_leaf_items()
@@ -159,8 +157,8 @@ def _build_base(_base_name, _base_parent_type):
 
     # prepare the attributes and methods for the new class to generate
     attributes = dict(locals())
-    del attributes["_base_name"]
-    del attributes["_base_parent_type"]
+    del attributes['_base_name']
+    del attributes['_base_parent_type']
     # generate a new class
     return type(_base_name, (_base_parent_type,), attributes)
 
@@ -170,7 +168,7 @@ try:
     from ax_utils.ax_tree._ax_tree import _AXTree
 except ImportError:
     # Fall back to the python implementation
-    _AXTree = _build_base("_SlowAXTree", dict)
+    _AXTree = _build_base('_SlowAXTree', dict)
 
 
 def _build_axtree(_base_name, _base_parent_type):
@@ -184,7 +182,7 @@ def _build_axtree(_base_name, _base_parent_type):
     # They are responsible for breaking the 'dotted' keys into the tree.
 
     def __delitem__(self, key):
-        parts = key.split(".")
+        parts = key.split('.')
         cur = self
         for n in parts[:-1]:
             cur = cur[n]
@@ -218,7 +216,7 @@ def _build_axtree(_base_name, _base_parent_type):
             return v
 
     def merge(self, tree, **options):
-        override_with_empty = options.get("override_with_empty", False)
+        override_with_empty = options.get('override_with_empty', False)
         for key, value in tree.iter_leaf_items():
             # Don't override existing values.
             if (not override_with_empty) and (value == {} and key in self):
@@ -241,32 +239,32 @@ def _build_axtree(_base_name, _base_parent_type):
     __guarded_delitem__ = _base_parent_type.__delitem__
 
     attributes = dict(locals())
-    del attributes["_base_name"]
-    del attributes["_base_parent_type"]
+    del attributes['_base_name']
+    del attributes['_base_parent_type']
     return type(_base_name, (_base_parent_type,), attributes)
 
 
 # Build an AXTree-Class where a 'plain' python dictionary is used for storage
-AXTree = _build_axtree("AXTree", _AXTree)
+AXTree = _build_axtree('AXTree', _AXTree)
 
 # Build an AXTree-Class where an 'OrderedDict' is used for storage
-_AXOrderedTree = _build_base("_AXOrderedTree", OrderedDict)
-AXOrderedTree = _build_axtree("AXOrderedTree", _AXOrderedTree)
+_AXOrderedTree = _build_base('_AXOrderedTree', OrderedDict)
+AXOrderedTree = _build_axtree('AXOrderedTree', _AXOrderedTree)
 
 
-# Registering at copy_reg makes cPickle.dumps a little 3x faster
+# Registering at pickle makes pickle.dumps a little 3x faster
 def pickle_ax_tree(obj):
     return AXTree, (), None, None, obj.iter_leaf_items()
 
 
-copy_reg.pickle(AXTree, pickle_ax_tree)
+pickle(AXTree, pickle_ax_tree)
 
 
 # Here are python implementations of iterators over AXTree
 # They are only used in
 # * AXOrderedTree
 # * AXTree (if the import of C-Extension fails)
-class AXTreeIterator(six.Iterator):
+class AXTreeIterator(ABC_Iterator):
     def __init__(self, tree):
         # the iterator needs to decide if he should go 'downwards' in the tree.
         # He does that by inspecting the type of a node.
@@ -289,7 +287,7 @@ class AXTreeIterator(six.Iterator):
                 return self._get(name, value)
 
             for new_name, new_value in reversed(list(value.items())):
-                self.nodes.appendleft((".".join((name, new_name)), new_value))
+                self.nodes.appendleft(('.'.join((name, new_name)), new_value))
 
         raise StopIteration()
 

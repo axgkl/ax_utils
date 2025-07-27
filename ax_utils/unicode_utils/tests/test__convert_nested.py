@@ -1,14 +1,13 @@
+import collections
+import copy
 import datetime
 import json
-import unittest
-import copy
-import time
-import collections
 import sys
+import time
+import unittest
 
-from ax_utils import six
-from ax_utils.unicode_utils import encode_nested
-from ax_utils.unicode_utils import decode_nested
+from ax_utils.unicode_utils import decode_nested, encode_nested
+
 from .sample_objects import big_doc
 
 if sys.version_info.major == 3:
@@ -22,23 +21,17 @@ class TestConvertNested(unittest.TestCase):
 
     def test_encode_happens(self):
         ob = copy.deepcopy(big_doc)
-        ob['foo'] = {u'a': [{'b': [(1, 2, [u'\xd6sterreich'])]}]}
+        ob['foo'] = {'a': [{'b': [(1, 2, ['\xd6sterreich'])]}]}
 
         ob = encode_nested(ob)
 
         key = tuple(ob[b'foo'])[0]
-        self.assertTrue(isinstance(key, six.binary_type))
-        self.assertFalse(isinstance(key, six.text_type))
+        self.assertTrue(isinstance(key, bytes))
+        self.assertFalse(isinstance(key, str))
 
-        self.assertTrue(isinstance(
-            ob[b'foo'][b'a'][0][b'b'][0][2][0],
-            six.binary_type
-        ))
+        self.assertTrue(isinstance(ob[b'foo'][b'a'][0][b'b'][0][2][0], bytes))
 
-        self.assertFalse(isinstance(
-            ob[b'foo'][b'a'][0][b'b'][0][2][0],
-            six.text_type
-        ))
+        self.assertFalse(isinstance(ob[b'foo'][b'a'][0][b'b'][0][2][0], str))
 
         ref = {b'a': [{b'b': [(1, 2, [b'\xc3\x96sterreich'])]}]}
         self.assertEqual(ob[b'foo'], ref)
@@ -47,7 +40,7 @@ class TestConvertNested(unittest.TestCase):
         self.assertEqual(2**66, encode_nested(2**66))
 
     def test_pymongo_int64(self):
-        class Int64(long):
+        class Int64(int):
             pass
 
         ob = Int64(2**66)
@@ -65,13 +58,13 @@ class TestConvertNested(unittest.TestCase):
         new_ob = encode_nested(ob)
 
         self.assertIsInstance(new_ob, collections.OrderedDict)
-        self.assertEqual((1, 2, 3, 10000, 20000),  tuple(new_ob))
+        self.assertEqual((1, 2, 3, 10000, 20000), tuple(new_ob))
 
     def test_decode_nested(self):
         ob = {b'a': [{b'b': [(1, 2, [b'\xc3\x96sterreich'])]}]}
 
         new = decode_nested(ob)
-        ref = {u'a': [{u'b': [(1, 2, [u'\xd6sterreich'])]}]}
+        ref = {'a': [{'b': [(1, 2, ['\xd6sterreich'])]}]}
         self.assertEqual(ref, new)
         self.assertEqual(ob, encode_nested(new))
 
@@ -88,14 +81,18 @@ class TestConvertNested(unittest.TestCase):
         start = time.time()
         for _ in range(nb):
             encode_nested(big_doc)
-        print ('big object with %s bytes json: ' % len(json.dumps(big_doc)),)
-        print (int(nb / (time.time() - start)), ' OPS/s')
+        print(
+            'big object with %s bytes json: ' % len(json.dumps(big_doc)),
+        )
+        print(int(nb / (time.time() - start)), ' OPS/s')
 
         start = time.time()
         for _ in range(nb):
             encode_nested(big_doc['props'])
-        print ('small object with %s bytes json: ' % len(json.dumps(big_doc['props'])),)
-        print (int(nb / (time.time() - start)), ' OPS/s')
+        print(
+            'small object with %s bytes json: ' % len(json.dumps(big_doc['props'])),
+        )
+        print(int(nb / (time.time() - start)), ' OPS/s')
 
     def test_encode_and_decode_nested_bytearray(self):
         ob = {b'a': [{b'b': [(1, 2, [bytearray(b'\x04')])]}]}
@@ -105,6 +102,6 @@ class TestConvertNested(unittest.TestCase):
 
         ob = {b'a': [{b'b': [(1, 2, [bytearray(b'\x04')])]}]}
         new = decode_nested(ob)
-        ref = {u'a': [{u'b': [(1, 2, [u'\x04'])]}]}
+        ref = {'a': [{'b': [(1, 2, ['\x04'])]}]}
         self.assertEqual(ref, new)
         self.assertEqual(ob, encode_nested(new))

@@ -1,18 +1,18 @@
+import struct
 import time
 import unittest
 
-from ax_utils.six import int2byte
 from ax_utils.unicode_utils import is_utf8
 
 
 class TestIsUTF8(unittest.TestCase):
     def _gen_str(self, *args):
-        return b''.join(map(int2byte, args))
+        return b''.join(bytes([i]) for i in args)
 
     def test_isutf8(self):
         self.assertTrue(is_utf8(b'a'))
-        self.assertTrue(is_utf8(u'a'))
-        self.assertFalse(is_utf8(int2byte(0b11111111)))
+        self.assertTrue(is_utf8('a'))
+        self.assertFalse(is_utf8(bytes([0b11111111])))
         self.assertFalse(is_utf8(int2byte(0b10000000)))
         self.assertTrue(is_utf8(int2byte(0b01111111)))
 
@@ -38,4 +38,4 @@ class TestIsUTF8(unittest.TestCase):
         start = time.time()
         for _ in range(10**6):
             is_utf8(x)
-        print (time.time() - start)
+        print(time.time() - start)
