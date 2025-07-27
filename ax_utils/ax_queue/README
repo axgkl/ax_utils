@@ -1,0 +1,4 @@
+Python 2.x's Queue implementation is done on the basis of a busy loop (!)
+This is fixed with SH's AXQueue (and also in Python 3)
+
+Note: If AXQueue can't be compiled on a platform we fall back to python version.
