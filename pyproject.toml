@@ -8,9 +8,9 @@ version = "3.0.2"
 description = "Standalone ax_utils package with C/C++ extensions for high-performance utilities"
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = "BSD-3-Clause"
 authors = [
-    {name = "Your Company", email = "contact@axgkl.com"}
+    {name = "MYCOMPANY", email = "contact@mycompany.com"}
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
