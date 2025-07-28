@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -26,17 +26,7 @@ classifiers = [
 keywords = ["utilities", "performance", "tree", "queue", "unicode"]
 dependencies = ["setuptools"]
 
-[project.optional-dependencies]
-dev = [
-  "pytest>=7.0",
-  "pytest-cov>=4.0",
-  "pytest-benchmark>=4.0",
-  "pytest-xdist>=3.0",
-  "ruff>=0.1.0",
-  "mypy>=1.0",
-  "twine>=4.0",
-]
-test = ["pytest>=7.0", "pytest-cov>=4.0"]
+
 
 [project.urls]
 Homepage = "https://github.com/axgkl/ax_utils"
@@ -48,21 +38,11 @@ Repository = "https://github.com/axgkl/ax_utils.git"
 ax_queue = "ax_utils.ax_queue.gevent_patch:patch"
 
 [tool.setuptools]
-packages = { find = { where = [
-  ".",
-], include = [
-  "ax_utils*",
-], exclude = [
-  "*.tests*",
-  "tests*",
-] } }
+packages = { find = { where = ["."], include = ["ax_utils*"], exclude = ["*.tests*", "tests*"] } }
 include-package-data = true
 
-[tool.setuptools.package-dir]
-ax_utils = "ax_utils"
-
 [tool.setuptools.package-data]
-ax_utils = ["**/*.c", "**/*.cpp", "**/*.h"]
+ax_utils = ["**/*.c", "**/*.cpp", "**/*.h", "**/*.so"]
 
 [tool.setuptools.exclude-package-data]
 "*" = [
@@ -176,4 +156,6 @@ dev = [
   "pytest-benchmark>=4.0.0",
   "pytest-cov>=5.0.0",
   "pytest-xdist>=3.6.1",
+  "twine>=4.0",
 ]
+test = ["pytest>=7.0", "pytest-cov>=4.0"]

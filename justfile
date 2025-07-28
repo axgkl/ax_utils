@@ -1,5 +1,5 @@
-# ax_utils development tasks
-# Requires: just (https://github.com/casey/just)
+# ax_utils development tasks (uv-native)
+# Requires: just (https://github.com/casey/just) and uv
 # Install: brew install just
 
 # Default recipe - show help
@@ -18,18 +18,21 @@ clean:
     rm -rf dist/
     rm -rf *.egg-info/
     rm -rf .pytest_cache/
+    rm -rf .uv-cache/
     find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
     find . -type f -name "*.pyc" -delete 2>/dev/null || true
     find . -type f -name "*.pyo" -delete 2>/dev/null || true
     find . -type f -name "*.so" -delete 2>/dev/null || true
     @echo "✅ Clean complete"
 
-# 🔧 Install development dependencies
-install-dev:
-    @echo "🔧 Installing development dependencies..."
-    uv add --dev pytest pytest-cov pytest-benchmark pytest-xdist
-    uv add --dev ruff mypy
-    @echo "✅ Development dependencies installed"
+# 🔧 Sync development dependencies (uv native)
+sync:
+    @echo "🔧 Syncing dependencies..."
+    uv sync --group dev
+    @echo "✅ Dependencies synced"
+
+# 🔧 Install development dependencies (legacy compatibility)
+install-dev: sync
 
 # 🏗️ Build C/C++ extensions in-place for development
 build:
@@ -37,9 +40,9 @@ build:
     uv run python setup.py build_ext --inplace
     @echo "✅ Extensions built successfully"
 
-# 📦 Build distribution packages (source + wheel)
+# 📦 Build distribution packages (source + wheel) - uv native
 dist: clean
-    @echo "📦 Building distribution packages..."
+    @echo "📦 Building distribution packages with uv..."
     uv build
     @echo "✅ Distribution packages built:"
     @ls -la dist/
@@ -47,17 +50,17 @@ dist: clean
 # 🧪 Run all tests
 test: build
     @echo "🧪 Running test suite..."
-    uv run python -m pytest tests/ -v --tb=short
+    uv run --group test pytest tests/ -v --tb=short
 
 # 🧪 Run specific test file
 test-file FILE: build
     @echo "🧪 Running tests in {{FILE}}..."
-    uv run python -m pytest {{FILE}} -v
+    uv run --group test pytest {{FILE}} -v
 
 # 🧪 Run tests with coverage
 test-cov: build
     @echo "🧪 Running tests with coverage..."
-    uv run python -m pytest tests/ --cov=ax_utils --cov-report=html --cov-report=term
+    uv run --group test pytest tests/ --cov=ax_utils --cov-report=html --cov-report=term
 
 # 🏃 Run quick functionality tests
 test-quick: build
@@ -67,45 +70,48 @@ test-quick: build
 # 🚀 Run performance benchmarks
 benchmark: build
     @echo "🚀 Running performance benchmarks..."
-    uv run python tests/test_benchmarks.py
+    uv run --group dev pytest tests/test_benchmarks.py -v --benchmark-only
 
 # 🧪 Run integration tests
 test-integration: build
     @echo "🧪 Running integration tests..."
-    uv run python tests/test_integration.py
+    uv run --group test pytest tests/test_integration.py
 
 # 🧪 Run all original module tests (from ax_utils subdirectories)
 test-original: build
     @echo "🧪 Running original module test suites..."
-    uv run python -m pytest ax_utils/*/tests/ -v
+    uv run --group test pytest ax_utils/*/tests/ -v
 
 # 🔍 Run linting and code quality checks
 lint:
     @echo "🔍 Running linting checks..."
-    uv run ruff check ax_utils/ tests/
-    uv run ruff format --check ax_utils/ tests/
+    uv run --group dev ruff check ax_utils/ tests/
+    uv run --group dev ruff format --check ax_utils/ tests/
 
 # 🔧 Auto-fix code formatting
 format:
     @echo "🔧 Formatting code..."
-    uv run ruff check --fix ax_utils/ tests/
-    uv run ruff format ax_utils/ tests/
+    uv run --group dev ruff check --fix ax_utils/ tests/
+    uv run --group dev ruff format ax_utils/ tests/
     @echo "✅ Code formatted"
 
 # 🔬 Run type checking
 typecheck:
     @echo "🔬 Running type checks..."
-    uv run mypy ax_utils/ --ignore-missing-imports
+    uv run --group dev mypy ax_utils/ --ignore-missing-imports
 
 # ✅ Run complete quality checks (lint + typecheck + test)
 check: lint typecheck test
     @echo "✅ All quality checks passed!"
 
-# 🚀 Install package in development mode
-install-dev-package: build
-    @echo "🚀 Installing package in development mode..."
+# 🚀 Install package in development mode (uv native)
+install-editable:
+    @echo "🚀 Installing package in editable mode..."
     uv pip install -e .
-    @echo "✅ Package installed in development mode"
+    @echo "✅ Package installed in editable mode"
+
+# 🚀 Install package in development mode (legacy alias)
+install-dev-package: install-editable
 
 # 📊 Show package info
 info:
@@ -119,6 +125,9 @@ info:
     @echo ""
     @echo "🔧 Build artifacts:"
     @find ax_utils -name "*.so" 2>/dev/null | wc -l | xargs echo "Compiled extensions:"
+    @echo ""
+    @echo "📦 uv project info:"
+    @uv tree --group dev | head -20
 
 # 🧪 Test import and basic functionality (alias for test-quick)
 test-import: test-quick
@@ -126,29 +135,29 @@ test-import: test-quick
 # 📋 Validate package for PyPI publishing
 validate: clean dist
     @echo "📋 Validating package for PyPI..."
-    uv run python -m twine check dist/*
+    uv run --group dev twine check dist/*
     @echo "✅ Package validation complete"
 
-# 🚀 Publish to PyPI (requires authentication)
+# 🚀 Publish to PyPI (requires authentication) - uv native
 publish: validate
-    @echo "🚀 Publishing to PyPI..."
+    @echo "🚀 Publishing to PyPI with uv..."
     @echo "⚠️  This will upload to PyPI. Make sure you're ready!"
     @read -p "Continue? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
     uv publish dist/*
     @echo "✅ Package published to PyPI!"
 
-# 🚀 Publish to Test PyPI (for testing)
+# 🚀 Publish to Test PyPI (for testing) - uv native
 publish-test: validate
-    @echo "🚀 Publishing to Test PyPI..."
+    @echo "🚀 Publishing to Test PyPI with uv..."
     uv publish --repository testpypi dist/*
     @echo "✅ Package published to Test PyPI!"
 
 # 🔄 Full development cycle (clean, build, test, lint)
-dev: clean build test-quick lint
+dev: clean sync build test-quick lint
     @echo "🔄 Development cycle complete!"
 
 # 🚀 Full release cycle (clean, build, test, lint, dist, validate)
-release: clean build test lint dist validate
+release: clean sync build test lint dist validate
     @echo "🚀 Release preparation complete!"
     @echo "📦 Files ready for release:"
     @ls -la dist/
@@ -163,6 +172,9 @@ debug-build:
     @echo "Python version:"
     @uv run python --version
     @echo ""
+    @echo "uv version:"
+    @uv --version
+    @echo ""
     @echo "Compiler information:"
     @which gcc || echo "gcc not found"
     @which clang || echo "clang not found"
@@ -173,6 +185,9 @@ debug-build:
     @echo "Compiled extensions:"
     @find ax_utils -name "*.so" || echo "No compiled extensions found"
     @echo ""
+    @echo "uv environment info:"
+    @uv python list
+    @echo ""
     @echo "Build with verbose output:"
     uv run python setup.py build_ext --inplace --verbose
 
@@ -180,12 +195,13 @@ debug-build:
 clean-all: clean
     @echo "🧹 Deep cleaning (including uv cache)..."
     uv cache clean
+    rm -rf .uv-cache/
     @echo "✅ Deep clean complete"
 
 # 📊 Run complete test suite with reports
 test-all: build
     @echo "📊 Running complete test suite..."
-    uv run python -m pytest tests/ -v --tb=short --cov=ax_utils --cov-report=html --cov-report=term --cov-report=xml
+    uv run --group dev pytest tests/ -v --tb=short --cov=ax_utils --cov-report=html --cov-report=term --cov-report=xml
     @echo "📊 Test reports generated:"
     @echo "  - HTML coverage: htmlcov/index.html"
     @echo "  - XML coverage: coverage.xml"
@@ -194,8 +210,44 @@ test-all: build
 quick: build test-quick
     @echo "🏃 Quick check complete!"
 
-# 🔧 Setup development environment from scratch
-setup: install-dev install-dev-package
+# 🔧 Setup development environment from scratch (uv native)
+setup:
+    @echo "🔧 Setting up development environment with uv..."
+    uv sync --group dev
+    uv pip install -e .
     @echo "🔧 Development environment setup complete!"
-    @echo "Available commands:"
+    @echo ""
+    @echo "🎯 Available commands:"
     @just --list
+
+# 🔍 Show dependency tree
+deps:
+    @echo "🔍 Dependency tree:"
+    uv tree --group dev
+
+# 🔄 Update dependencies to latest compatible versions
+update:
+    @echo "🔄 Updating dependencies..."
+    uv lock --upgrade
+    uv sync --group dev
+    @echo "✅ Dependencies updated"
+
+# 🚀 Run in production mode (no dev dependencies)
+run-prod:
+    @echo "🚀 Running with production dependencies only..."
+    uv run --no-group python -c "import ax_utils; print('ax_utils loaded successfully')"
+
+# 🔧 Add new dependency
+add DEP:
+    @echo "🔧 Adding dependency: {{DEP}}"
+    uv add {{DEP}}
+
+# 🔧 Add new dev dependency
+add-dev DEP:
+    @echo "🔧 Adding dev dependency: {{DEP}}"
+    uv add --group dev {{DEP}}
+
+# 🗑️ Remove dependency
+remove DEP:
+    @echo "🗑️ Removing dependency: {{DEP}}"
+    uv remove {{DEP}}

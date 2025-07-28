@@ -1,0 +1,5 @@
+# uv configuration
+cache-dir = ".uv-cache"
+python-preference = "system"
+compile-bytecode = true
+index-url = "https://pypi.org/simple"

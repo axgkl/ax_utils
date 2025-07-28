@@ -92,9 +92,9 @@ ipython_config.py
 # pyenv
 .python-version
 
-# UV
+# UV (keep uv.lock tracked, ignore cache)
+.uv-cache/
 .uv/
-uv.lock
 
 # Keep these files that should be tracked:
 !README.md
