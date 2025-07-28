@@ -8,12 +8,22 @@ GitHub Actions was failing with this error when trying to upload security scan a
 No files were found with the provided path: safety-report.json. No artifacts will be uploaded.
 ```
 
+## Additional Issue: UV Virtual Environment Error
+
+GitHub Actions was also failing with:
+```
+Run uv pip install safety
+error: No virtual environment found; run `uv venv` to create an environment, or pass `--system` to install into a non-virtual environment
+Error: Process completed with exit code 2.
+```
+
 ## Root Cause
 
-The error occurred because:
+The errors occurred because:
 1. **Security tools might fail** to generate report files under certain conditions
 2. **Artifact upload was unconditional** - tried to upload files that didn't exist  
 3. **No fallback handling** when tools fail to create reports
+4. **Missing --system flag** - UV requires explicit flag when installing outside virtual environments
 
 ## Solution Applied
 
@@ -39,13 +49,24 @@ The error occurred because:
     path: safety-report.json
 ```
 
-### ✅ **Improved Error Handling**
+### ✅ **System Package Installation**
+
+**UV requires explicit --system flag in CI environments:**
+```bash
+# Before (fails in CI)
+uv pip install safety
+
+# After (works in CI)
+uv pip install --system safety
+```
+
+**Reason**: GitHub Actions runs in system environment without virtual environment, so UV needs explicit permission to install system-wide packages.
 
 **Enhanced security scan steps:**
 ```yaml
 - name: Check for known vulnerabilities
   run: |
-    uv pip install safety
+    uv pip install --system safety  # --system flag required in CI
     echo "Running safety vulnerability check..."
     uv export --format requirements-txt | uv run safety check --stdin --output json --save-json safety-report.json || echo "Safety check completed (vulnerabilities may have been found)"
     if [ -f safety-report.json ]; then
