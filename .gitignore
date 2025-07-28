@@ -104,3 +104,4 @@ ipython_config.py
 !setup.py
 !justfile
 bandit-report.json
+.aider*
