@@ -31,10 +31,10 @@ def run_command(cmd, description):
 def check_python_version():
     """Check if Python version is supported."""
     version = sys.version_info
-    supported = version >= (3, 8)
+    supported = version >= (3, 9)
     status = '✅' if supported else '❌'
     print(f'{status} Python {version.major}.{version.minor} '
-          f'(supported: 3.8+)')
+          f'(supported: 3.9+)')
     return supported
 
 
