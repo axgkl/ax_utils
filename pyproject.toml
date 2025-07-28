@@ -3,7 +3,7 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ax_utils"
+name = "axiros_utils"
 version = "3.0.2"
 description = "Standalone ax_utils package with C/C++ extensions for high-performance utilities"
 readme = "README.md"

@@ -53,7 +53,7 @@ def read_version():
 
 
 setup(
-    name="ax_utils",
+    name="axiros_utils",
     version=read_version(),
     include_package_data=True,
     ext_modules=exts,
