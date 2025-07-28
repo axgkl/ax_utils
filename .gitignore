@@ -103,3 +103,4 @@ uv.lock
 !pyproject.toml
 !setup.py
 !justfile
+bandit-report.json
