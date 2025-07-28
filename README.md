@@ -22,7 +22,7 @@ Author: **Stephan Bentheimer**
 ## Installation
 
 ```bash
-pip install ax_utils
+pip install axiros-utils
 ```
 
 The package includes C/C++ extensions that will be compiled during installation, providing significant performance improvements over pure Python implementations.
