@@ -3,7 +3,7 @@ revision = 2
 requires-python = ">=3.9"
 
 [[package]]
-name = "ax-utils"
+name = "axiros-utils"
 version = "3.0.2"
 source = { editable = "." }
 dependencies = [
