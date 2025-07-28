@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/axgkl/ax_utils/workflows/Tests/badge.svg)](https://github.com/axgkl/ax_utils/actions/workflows/test.yml)
 [![Python versions](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/ax_utils/)
-[![PyPI version](https://badge.fury.io/py/ax_utils.svg)](https://badge.fury.io/py/ax_utils)
+[![PyPI version](https://badge.fury.io/py/axiros_utils.svg)](https://badge.fury.io/py/axiros_utils)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-green.svg)](LICENSE)
 [![Code style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
