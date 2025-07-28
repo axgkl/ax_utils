@@ -10,9 +10,6 @@
 
 ## ✅ Post-Push Checklist
 
-### ℹ️ **Known Issue: First Push UV Cache Error**
-Your first GitHub Actions run may show a UV cache error. This is **normal and expected** - the workflows have been configured to handle this automatically. See `docs/uv_cache_fix.md` for details.
-
 ### 1. Repository Secrets
 - [ ] Go to **Settings → Secrets and variables → Actions**
 - [ ] Add `PYPI_API_TOKEN` (get from [PyPI Account Settings](https://pypi.org/manage/account/))
