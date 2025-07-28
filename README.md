@@ -97,4 +97,4 @@ pip install -e .
 
 ## License
 
-MIT License
+BSD-3-Clause license (incl. Axiros attribution obligation).
