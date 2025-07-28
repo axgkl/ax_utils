@@ -1,3 +1,7 @@
+# Security scan reports
+bandit-report.json
+safety-report.json
+
 # Python
 __pycache__/
 *.py[cod]
