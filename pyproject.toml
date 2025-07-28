@@ -157,5 +157,6 @@ dev = [
   "pytest-cov>=5.0.0",
   "pytest-xdist>=3.6.1",
   "twine>=4.0",
+  "nh3>=0.3.0",
 ]
 test = ["pytest>=7.0", "pytest-cov>=4.0"]
