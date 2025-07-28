@@ -56,7 +56,7 @@ Repository = "https://github.com/axgkl/ax_utils.git"
 ax_queue = "ax_utils.ax_queue.gevent_patch:patch"
 
 [tool.setuptools]
-packages = ["ax_utils"]
+packages = { find = { where = ["."], include = ["ax_utils*"], exclude = ["*.tests*", "tests*"] } }
 include-package-data = true
 
 [tool.setuptools.package-dir]
@@ -64,6 +64,20 @@ ax_utils = "ax_utils"
 
 [tool.setuptools.package-data]
 ax_utils = ["**/*.c", "**/*.cpp", "**/*.h"]
+
+[tool.setuptools.exclude-package-data]
+"*" = [
+    "*.pyc",
+    "*.pyo", 
+    "*~",
+    "__pycache__",
+    ".coverage",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "tests/*",
+    "*/tests/*"
+]
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = [
