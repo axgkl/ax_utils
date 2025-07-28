@@ -56,9 +56,6 @@ setup(
     name="ax_utils",
     version=read_version(),
     include_package_data=True,
-    install_requires=[
-        "setuptools",
-    ],
     ext_modules=exts,
     packages=find_packages(".", include=["ax_utils*"]),
     entry_points={
