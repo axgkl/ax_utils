@@ -43,7 +43,7 @@ jobs:
 
     - name: Check for common security issues
       run: |
-        uv run python -m pip install bandit[toml]
+        uv pip install bandit[toml]
         uv run bandit -r ax_utils/ -f json -o bandit-report.json || true
 
     - name: Upload security scan results
@@ -71,7 +71,7 @@ jobs:
 
     - name: Check for known vulnerabilities
       run: |
-        uv run python -m pip install safety
+        uv pip install safety
         uv export --format requirements-txt | uv run safety check --stdin --output json --save-json safety-report.json || true
 
     - name: Upload vulnerability scan results
