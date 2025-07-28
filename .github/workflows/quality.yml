@@ -43,7 +43,7 @@ jobs:
 
     - name: Check for common security issues
       run: |
-        uv pip install bandit[toml]
+        uv pip install --system bandit[toml]
         echo "Running bandit security scan..."
         uv run bandit -r ax_utils/ -f json -o bandit-report.json || echo "Bandit scan completed (issues may have been found)"
         if [ -f bandit-report.json ]; then
@@ -79,7 +79,7 @@ jobs:
 
     - name: Check for known vulnerabilities
       run: |
-        uv pip install safety
+        uv pip install --system safety
         echo "Running safety vulnerability check..."
         uv export --format requirements-txt | uv run safety check --stdin --output json --save-json safety-report.json || echo "Safety check completed (vulnerabilities may have been found)"
         if [ -f safety-report.json ]; then
