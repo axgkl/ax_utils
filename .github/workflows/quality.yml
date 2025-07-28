@@ -44,11 +44,19 @@ jobs:
     - name: Check for common security issues
       run: |
         uv pip install bandit[toml]
-        uv run bandit -r ax_utils/ -f json -o bandit-report.json || true
+        echo "Running bandit security scan..."
+        uv run bandit -r ax_utils/ -f json -o bandit-report.json || echo "Bandit scan completed (issues may have been found)"
+        if [ -f bandit-report.json ]; then
+          echo "Bandit report generated successfully"
+          ls -la bandit-report.json
+        else
+          echo "No bandit report generated"
+          echo '{"status": "no_report_generated"}' > bandit-report.json
+        fi
 
     - name: Upload security scan results
       uses: actions/upload-artifact@v4
-      if: always()
+      if: always() && hashFiles('bandit-report.json') != ''
       with:
         name: security-scan-results
         path: bandit-report.json
@@ -72,11 +80,19 @@ jobs:
     - name: Check for known vulnerabilities
       run: |
         uv pip install safety
-        uv export --format requirements-txt | uv run safety check --stdin --output json --save-json safety-report.json || true
+        echo "Running safety vulnerability check..."
+        uv export --format requirements-txt | uv run safety check --stdin --output json --save-json safety-report.json || echo "Safety check completed (vulnerabilities may have been found)"
+        if [ -f safety-report.json ]; then
+          echo "Safety report generated successfully"
+          ls -la safety-report.json
+        else
+          echo "No safety report generated"
+          echo '{"status": "no_report_generated"}' > safety-report.json
+        fi
 
     - name: Upload vulnerability scan results
       uses: actions/upload-artifact@v4
-      if: always()
+      if: always() && hashFiles('safety-report.json') != ''
       with:
         name: vulnerability-scan-results
         path: safety-report.json
