@@ -8,6 +8,8 @@
 
 A standalone Python package providing high-performance utilities with C/C++ extensions, converted from the original `ax.utils` namespace package.
 
+Author:**Stephan Bentheimer** 
+
 ## Features
 
 - **AXQueue**: High-performance thread-safe queue implementation with C++ backend
