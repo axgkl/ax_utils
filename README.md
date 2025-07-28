@@ -8,7 +8,7 @@
 
 A standalone Python package providing high-performance utilities with C/C++ extensions, converted from the original `ax.utils` namespace package.
 
-Author:**Stephan Bentheimer** 
+Author: **Stephan Bentheimer** 
 
 ## Features
 
