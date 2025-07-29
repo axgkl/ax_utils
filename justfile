@@ -143,7 +143,7 @@ publish: dist
     @echo "🚀 Publishing to PyPI with uv..."
     @echo "⚠️  This will upload to PyPI. Make sure you're ready!"
     @read -p "Continue? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
-    uv publish dist/*
+    uv publish --token "$(pass pypitoken)" dist/*
     @echo "✅ Package published to PyPI!"
 
 # 🚀 Publish to Test PyPI (for testing) - uv native
