@@ -27,6 +27,28 @@ pip install axiros-utils
 
 The package includes C/C++ extensions that will be compiled during installation, providing significant performance improvements over pure Python implementations.
 
+## Troubleshoot Installation
+
+Problem: Compile fail on darwin.
+
+```
+[stderr]
+      ax_utils/ax_queue/_ax_queue.cpp:4:10: fatal error: 'exception' file
+      not found
+          4 | #include <exception>
+            |          ^~~
+      1 error generated.
+      error: command '/usr/bin/clang++' failed with exit code 1
+```
+With `Python 3.11.13 (main, Jun  3 2025, 18:38:25) [Clang 17.0.0 (clang-1700.0.13.3)]` on darwin
+
+Solution: Refresh your compiler tools. E.g. `xcode-select --install`.
+
+The [tests](https://github.com/axgkl/ax_utils/actions) contain a few tests on osx.
+
+
+
+
 ## Quick Start
 
 ```python

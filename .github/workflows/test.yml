@@ -127,6 +127,99 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
 
+  test-macos-environments:
+    name: Test Specific macOS Environments  
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Your current working setup
+          - os: macos-latest
+            python-version: '3.11'
+          # Problem user's setup
+          - os: macos-15
+            python-version: '3.11.13'
+          # Additional test cases
+          - os: macos-14
+            python-version: '3.11.13'
+            
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Show environment details
+      run: |
+        echo "=== Python Info ==="
+        python --version
+        python -c "import sys; print(f'Python: {sys.version}')"
+        echo "=== Compiler Info ==="
+        clang++ --version
+        echo "=== macOS Info ==="
+        sw_vers
+        echo "=== Xcode Info ==="
+        xcode-select -p
+        ls -la /Applications/Xcode* 2>/dev/null || echo "No Xcode apps found"
+        
+    - name: Check C++ headers availability
+      run: |
+        echo "=== C++ Standard Headers Check ==="
+        echo '#include <exception>' > test.cpp
+        echo 'int main() { return 0; }' >> test.cpp
+        clang++ -v test.cpp -o test 2>&1 || echo "Compilation failed"
+        rm -f test.cpp test
+        
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: false
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Build C/C++ extensions
+      run: |
+        uv run python setup.py build_ext --inplace
+        
+    - name: Test imports and basic functionality
+      run: |
+        uv run python -c "
+        from ax_utils.ax_queue import AXQueue
+        from ax_utils.ax_tree import AXTree 
+        from ax_utils.props_to_tree import props_to_tree
+        from ax_utils.unicode_utils import is_utf8
+        print('✅ All imports successful')
+        
+        # Basic functionality test
+        queue = AXQueue(maxsize=10)
+        queue.put('test')
+        assert queue.get() == 'test'
+        print('✅ AXQueue working')
+        
+        tree = AXTree()
+        tree['a.b.c'] = 'value'
+        assert tree['a.b.c'] == 'value'
+        print('✅ AXTree working')
+        
+        props = {'x.y.z': 1, 'x.y.w': 2}
+        tree_result = props_to_tree(props)
+        assert tree_result['x']['y']['z'] == 1
+        print('✅ props_to_tree working')
+        
+        assert is_utf8(b'hello') == True
+        assert is_utf8('hello') == True
+        print('✅ is_utf8 working')
+        
+        print('🎉 All functionality tests passed!')
+        "
+
   benchmark:
     name: Performance Benchmarks
     runs-on: ubuntu-latest

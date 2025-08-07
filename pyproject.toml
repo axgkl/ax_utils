@@ -27,7 +27,6 @@ keywords = ["utilities", "performance", "tree", "queue", "unicode"]
 dependencies = ["setuptools"]
 
 
-
 [project.urls]
 Homepage = "https://github.com/axgkl/ax_utils"
 Documentation = "https://github.com/axgkl/ax_utils#readme"
@@ -38,7 +37,14 @@ Repository = "https://github.com/axgkl/ax_utils.git"
 ax_queue = "ax_utils.ax_queue.gevent_patch:patch"
 
 [tool.setuptools]
-packages = { find = { where = ["."], include = ["ax_utils*"], exclude = ["*.tests*", "tests*"] } }
+packages = { find = { where = [
+  ".",
+], include = [
+  "ax_utils*",
+], exclude = [
+  "*.tests*",
+  "tests*",
+] } }
 include-package-data = true
 
 [tool.setuptools.package-data]
