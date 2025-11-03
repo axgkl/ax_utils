@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "axiros_utils"
-version = "3.0.2"
+version = "3.1.0"
 description = "Standalone ax_utils package with C/C++ extensions for high-performance utilities"
 readme = "README.md"
 requires-python = ">=3.9"

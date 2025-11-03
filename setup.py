@@ -49,7 +49,7 @@ if os.getenv("NO_CPP_EXTENSION"):
 
 
 def read_version():
-    return "3.0.2"
+    return "3.1.0"
 
 
 setup(
