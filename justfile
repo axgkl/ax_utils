@@ -47,6 +47,14 @@ dist: clean
     @echo "✅ Distribution packages built:"
     @ls -la dist/
 
+# 📦 Build multi-platform wheels using cibuildwheel (like CI does)
+dist-wheels: clean
+    @echo "📦 Building multi-platform wheels with cibuildwheel..."
+    @echo "⚠️  This will build wheels for current platform only (use CI for all platforms)"
+    uv run --group dev cibuildwheel --output-dir wheelhouse
+    @echo "✅ Wheels built:"
+    @ls -lh wheelhouse/
+
 # 🧪 Run all tests
 test: build
     @echo "🧪 Running test suite..."

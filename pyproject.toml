@@ -154,6 +154,27 @@ strict_equality = true
 module = "ax_utils.*"
 ignore_errors = true
 
+[tool.cibuildwheel]
+# Build wheels for Python 3.9-3.12
+build = ["cp39-*", "cp310-*", "cp311-*", "cp312-*"]
+
+# Skip 32-bit builds and musllinux
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux_*"]
+
+# Build for multiple architectures
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64"]
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]
+
+# Test that the wheels work
+test-command = "python -c \"from ax_utils.ax_queue import AXQueue; from ax_utils.ax_tree import AXTree; from ax_utils.props_to_tree import props_to_tree; print('Wheel test passed')\""
+test-skip = "*-macosx_arm64"
+
 [dependency-groups]
 dev = [
   "ruff>=0.1.0",
@@ -164,5 +185,6 @@ dev = [
   "pytest-xdist>=3.6.1",
   "twine>=4.0",
   "nh3>=0.3.0",
+  "cibuildwheel>=2.21.0",
 ]
 test = ["pytest>=7.0", "pytest-cov>=4.0"]
