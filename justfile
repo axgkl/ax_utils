@@ -175,6 +175,52 @@ release: clean sync build test lint dist
     @echo "  just publish       # Publish to real PyPI"
     @echo "  just validate      # Optional validation (has known nh3 issue)"
 
+# 🚀 Release new version with multi-platform wheels via GitHub Actions
+release-wheels VERSION:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    # Extract version from pyproject.toml
+    CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+    
+    echo "🔍 Current version: $CURRENT_VERSION"
+    echo "🎯 New version: {{VERSION}}"
+    echo ""
+    
+    # Confirm with user
+    read -p "Update version from $CURRENT_VERSION to {{VERSION}} and create release? (y/N): " confirm
+    if [ "$confirm" != "y" ]; then
+        echo "❌ Release cancelled"
+        exit 1
+    fi
+    
+    echo "📝 Updating version in pyproject.toml and setup.py..."
+    sed -i.bak 's/^version = ".*"/version = "{{VERSION}}"/' pyproject.toml
+    sed -i.bak 's/return ".*"/return "{{VERSION}}"/' setup.py
+    rm -f pyproject.toml.bak setup.py.bak
+    
+    echo "✅ Version updated to {{VERSION}}"
+    echo ""
+    echo "📦 Committing version bump..."
+    git add pyproject.toml setup.py
+    git commit -m "Bump version to {{VERSION}}"
+    
+    echo "🏷️  Creating git tag v{{VERSION}}..."
+    git tag v{{VERSION}}
+    
+    echo "🚀 Pushing to GitHub..."
+    git push origin main
+    git push origin v{{VERSION}}
+    
+    echo ""
+    echo "✅ Release initiated!"
+    echo "📊 GitHub Actions will now:"
+    echo "   1. Build wheels for Linux x86_64 and ARM64"
+    echo "   2. Build source distribution"
+    echo "   3. Publish to PyPI"
+    echo ""
+    echo "🔗 View progress: https://github.com/axgkl/ax_utils/actions"
+
 # 🐛 Debug build issues
 debug-build:
     @echo "🐛 Debug build information..."
